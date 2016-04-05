@@ -8,5 +8,11 @@
   with_items:
     - mapr-warden
 
+# Using restarted to work around defect 23021
+- name: start posix client on all nodes
+  sudo_user: root
+  service: name=mapr-posix-client-{{posix_client_edition|default("basic")}} state=restarted
+  when: posix_client_enabled is defined and posix_client_enabled == True
+
 - name: wait for the fileserver to be listening
   wait_for: port=5660
