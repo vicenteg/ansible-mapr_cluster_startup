@@ -8,11 +8,16 @@
   with_items:
     - mapr-warden
 
+- name: is fuse client mounted?
+  shell: mount | grep posix-client-basic
+  register: mount
+  failed_when: mount.rc not in (0,1)
+
 # Using restarted to work around defect 23021
 - name: start posix client on all nodes
   sudo_user: root
   service: name=mapr-posix-client-{{posix_client_edition|default("basic")}} state=restarted
-  when: mapr_version.startswith("v5") and posix_client_enabled is defined and posix_client_enabled == True
+  when: posix_client_enabled is defined and posix_client_enabled == True and mount.rc == 1
 
 - name: wait for the fileserver to be listening
   wait_for: port=5660
