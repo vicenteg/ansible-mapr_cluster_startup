@@ -2,8 +2,8 @@
 # tasks file for mapr_cluster_startup
 
 - name: start the warden on all nodes
-  sudo: yes
-  sudo_user: root
+  become: yes
+  become_user: root
   service: name={{item}} state=started
   with_items:
     - mapr-warden
@@ -15,7 +15,8 @@
 
 # Using restarted to work around defect 23021
 - name: start posix client on all nodes
-  sudo_user: root
+  become: yes
+  become_user: root
   service: name=mapr-posix-client-{{posix_client_edition|default("basic")}} state=restarted
   when: posix_client_enabled is defined and posix_client_enabled == True and mount.rc == 1
 
